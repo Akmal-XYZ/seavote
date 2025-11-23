@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Eagle D’Or 2025 – Voting</title>
+<link rel="icon" type="image/png" href="../logo_sea.png" />
 
 <style>
 /* =====================
@@ -231,7 +232,7 @@ input, select {
 
 <!-- ========== HEADER ========== -->
 <header>
-  <img src="../logo_eagledor.png" alt="Eagle D'Or Logo" class="logo-eagle">
+  <img src="/logo_eagledor.png" alt="Eagle D'Or Logo" class="logo-eagle">
   <h1>Eagle D’Or 2025</h1>
   <div style="color:#bdbdbd;margin-top:6px;font-size:14px">SEA — SAMP E-Sports Association News</div>
 </header>
@@ -241,7 +242,7 @@ input, select {
   <!-- Player cards generated statically here (you can also let JS inject) -->
   <article class="player-card" data-id="billy">
     <div class="player-image">
-      <img src="../billycostercard.png" alt="Billy Coster">
+      <img src="/billycostercard.png" alt="Billy Coster">
     </div>
     <div class="player-name">Billy Coster</div>
     <div class="player-circle">Indonesia</div>
@@ -258,7 +259,7 @@ input, select {
 
   <article class="player-card" data-id="youngky">
     <div class="player-image">
-      <img src="../youngkycard.png" alt="Youngky">
+      <img src="/youngkycard.png" alt="Youngky">
     </div>
     <div class="player-name">Youngky</div>
     <div class="player-circle">IMP</div>
@@ -275,7 +276,7 @@ input, select {
 
   <article class="player-card" data-id="guzman">
     <div class="player-image">
-      <img src="../guzmancard.png" alt="Guzman">
+      <img src="/guzmancard.png" alt="Guzman">
     </div>
     <div class="player-name">Guzman</div>
     <div class="player-circle">Tongsetan</div>
@@ -292,7 +293,7 @@ input, select {
 
   <article class="player-card" data-id="gonzela">
     <div class="player-image">
-      <img src="../gonzelcard.jpg" alt="Gonzela">
+      <img src="/gonzelcard.jpg" alt="Gonzela">
     </div>
     <div class="player-name">Gonzela</div>
     <div class="player-circle">Tongsetan</div>
@@ -503,6 +504,7 @@ document.querySelectorAll(".player-card").forEach(card => {
  *  FIREBASE SETUP
  *************************************************/
 const firebaseURL = "https://akun-f6c0e-default-rtdb.firebaseio.com/votes";
+const voteLogURL = "https://akun-f6c0e-default-rtdb.firebaseio.com/vote_logs";
 const nominees = ["billy", "youngky", "guzman", "gonzela", "revan"];
 
 /*************************************************
@@ -520,11 +522,11 @@ let voteData = {
  *  SCRIPT ADJUSTMENT — LU EDIT MANUAL DI SINI
  *************************************************/
 let scriptAdjustment = {
-  billy: 0,
-  youngky: 0,
-  guzman: 0,
-  gonzela: 0,
-  revan: 5
+  billy: 500,
+  youngky: 500,
+  guzman: 500,
+  gonzela: 500,
+  revan: 500
 };
 
 /*************************************************
@@ -634,6 +636,23 @@ document.getElementById("submitVote").onclick = async () => {
   }
 
   voteData[currentVoteID] += 1;
+
+  // Kirim log identitas ke database
+  try {
+    await fetch(`${voteLogURL}/${currentVoteID}.json`, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({
+        icName: ic,
+        icOrigin: oriIC,
+        oocCity: ooc,
+        timestamp: Date.now()
+      })
+    });
+  } catch(e) {
+    // tetap lanjut walau gagal log
+    console.warn("Gagal log identitas vote", e);
+  }
 
   await saveVotes();
   localStorage.setItem(key, "true");
